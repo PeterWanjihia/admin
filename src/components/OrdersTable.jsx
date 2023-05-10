@@ -7,7 +7,6 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import EditOrder from "./EditOrder";
 import { FiEdit } from "react-icons/fi";
-import { CgTrash } from "react-icons/cg";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleOrder } from "../redux/features/ModalSlice";
 import ModalContainer from "./ModalContainer";
@@ -82,7 +81,7 @@ export default function OrdersTable() {
                     <span className="">{row.calories}</span>
                   </TableCell>
                   <TableCell align="center">
-                    <span className="">{row.fat}</span>
+                    <span className="">Ksh {row.fat}</span>
                   </TableCell>
                   <TableCell align="center">
                     <span>30/03/2023</span>
@@ -99,19 +98,14 @@ export default function OrdersTable() {
                     </button>
                   </TableCell>
                 </TableRow>
-
-                <ModalContainer
-                  open={editOrder}
-                  aria-labelledby="modal-modal-title"
-                  aria-describedby="modal-modal-description"
-                >
-                  <EditOrder />
-                </ModalContainer>
               </>
             );
           })}
         </TableBody>
       </Table>
+      <ModalContainer open={editOrder}>
+        <EditOrder />
+      </ModalContainer>
     </TableContainer>
   );
 }

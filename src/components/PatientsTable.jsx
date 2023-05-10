@@ -6,7 +6,10 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { FiEdit } from "react-icons/fi";
-import { CgTrash } from "react-icons/cg";
+import { useSelector, useDispatch } from "react-redux";
+import ModalContainer from "./ModalContainer";
+import EditPatient from "./EditPatient";
+import { toggleEditPatient } from "../redux/features/ModalSlice";
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
@@ -23,6 +26,8 @@ const rows = [
 ];
 
 export default function PatientsTable() {
+  const dispatch = useDispatch();
+  const { editPatient } = useSelector((store) => store.modals);
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="Orders">
@@ -64,7 +69,10 @@ export default function PatientsTable() {
                 <span className="">{row.fat}</span>
               </TableCell>
               <TableCell align="center">
-                <button className="w-[40px] h-[40px] rounded-full mx-auto flex justify-center items-center bg-lblack text-lg text-white cursor-pointer">
+                <button
+                  onClick={() => dispatch(toggleEditPatient())}
+                  className="w-[30px] h-[30px] rounded-full mx-auto flex justify-center items-center bg-lblack text-lg text-white cursor-pointer"
+                >
                   <FiEdit />
                 </button>
               </TableCell>
@@ -72,6 +80,9 @@ export default function PatientsTable() {
           ))}
         </TableBody>
       </Table>
+      <ModalContainer open={editPatient}>
+        <EditPatient dispatch={dispatch} />
+      </ModalContainer>
     </TableContainer>
   );
 }

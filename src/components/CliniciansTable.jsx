@@ -7,6 +7,14 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { FiEdit } from "react-icons/fi";
 import { CgTrash } from "react-icons/cg";
+import { useDispatch, useSelector } from "react-redux";
+import ModalContainer from "./ModalContainer";
+import EditClinician from "./EditClinician";
+import {
+  toggleDeleteClinician,
+  toggleEditClinician,
+} from "../redux/features/ModalSlice";
+import DeleteClinician from "./DeleteClinician";
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
@@ -47,14 +55,15 @@ const rows = [
 ];
 
 export default function CliniciansTable() {
+  const { editClinicianModal, deleteClinicianModal } = useSelector(
+    (store) => store.modals
+  );
+  const dispatch = useDispatch();
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="Orders">
         <TableHead className="bg-input">
           <TableRow>
-            <TableCell align="center">
-              <span className="text-lg font-bold">#</span>
-            </TableCell>
             <TableCell align="center">
               <span className="text-lg font-bold">Name</span>
             </TableCell>
@@ -68,6 +77,9 @@ export default function CliniciansTable() {
               <span className="text-lg font-bold">Facility</span>
             </TableCell>
             <TableCell align="center">
+              <span className="text-lg font-bold">Verified</span>
+            </TableCell>
+            <TableCell align="center">
               <span className="text-lg font-bold">Actions</span>
             </TableCell>
           </TableRow>
@@ -78,15 +90,6 @@ export default function CliniciansTable() {
               key={row.name}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
-              <TableCell align="center">
-                <div className="w-[40px] h-[40px] bg-input overflow-hidden rounded-full mx-auto">
-                  <img
-                    src="avatar.png"
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </TableCell>
               <TableCell align="center">
                 <span className="">{row.name}</span>
               </TableCell>
@@ -100,11 +103,20 @@ export default function CliniciansTable() {
                 <span>JKUAT Hospital</span>
               </TableCell>
               <TableCell align="center">
+                <span className="font-bold text-green">YES</span>
+              </TableCell>
+              <TableCell align="center">
                 <div className="flex items-center gap-3 justify-center">
-                  <button className="w-[30px] h-[30px] rounded-full flex justify-center items-center bg-lblack text-lg text-white cursor-pointer">
+                  <button
+                    onClick={() => dispatch(toggleEditClinician())}
+                    className="w-[30px] h-[30px] rounded-full flex justify-center items-center bg-lblack text-lg text-white cursor-pointer"
+                  >
                     <FiEdit />
                   </button>
-                  <button className="w-[30px] h-[30px] rounded-full flex justify-center items-center bg-red text-lg text-white cursor-pointer">
+                  <button
+                    onClick={() => dispatch(toggleDeleteClinician())}
+                    className="w-[30px] h-[30px] rounded-full flex justify-center items-center bg-red text-lg text-white cursor-pointer"
+                  >
                     <CgTrash />
                   </button>
                 </div>
@@ -113,6 +125,12 @@ export default function CliniciansTable() {
           ))}
         </TableBody>
       </Table>
+      <ModalContainer open={editClinicianModal}>
+        <EditClinician />
+      </ModalContainer>
+      <ModalContainer open={deleteClinicianModal}>
+        <DeleteClinician />
+      </ModalContainer>
     </TableContainer>
   );
 }

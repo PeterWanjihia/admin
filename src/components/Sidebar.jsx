@@ -9,8 +9,9 @@ function Sidebar() {
       <header className="flex items-center justify-between border-b-bcolor border-b-[1px] px-3 h-20 sticky top-0 bg-white">
         <span className="text-4xl font-bold text-red my-3">CURECAB</span>
       </header>
-      <ul className="px-3 grow">
-        <li className="mt-4">
+      <ul className="px-3 pt-2 grow">
+
+        <li className="py-2">
           <NavLink
             className={({ isActive }) =>
               `text-lg flex items-center gap-4 p-3 px-5 ${
@@ -23,7 +24,8 @@ function Sidebar() {
             <span className="">Dashboard</span>
           </NavLink>
         </li>
-        <li className="mt-4">
+
+        <li className="py-2">
           <NavLink
             className={({ isActive }) =>
               `text-lg flex items-center gap-4 p-3 px-5 ${
@@ -36,7 +38,8 @@ function Sidebar() {
             <span className="">Orders</span>
           </NavLink>
         </li>
-        <li className="mt-4">
+
+        <li className="py-2">
           <NavLink
             className={({ isActive }) =>
               `text-lg flex items-center gap-4 p-3 px-5 ${
@@ -49,7 +52,8 @@ function Sidebar() {
             <span className="">Clinicians</span>
           </NavLink>
         </li>
-        <li className="mt-4">
+
+        <li className="py-2">
           <NavLink
             className={({ isActive }) =>
               `text-lg flex items-center gap-4 p-3 px-5 ${
@@ -62,6 +66,7 @@ function Sidebar() {
             <span className="">Patients</span>
           </NavLink>
         </li>
+        
       </ul>
       <div className="p-3">
         <button

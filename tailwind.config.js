@@ -21,6 +21,7 @@ export default {
         black: "#111",
         input: "#efefef",
         tp: "#00000029",
+        redlt: "#F8EAE9",
       },
     },
   },

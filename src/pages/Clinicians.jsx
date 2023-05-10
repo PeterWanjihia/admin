@@ -1,8 +1,14 @@
-import React from "react";
 import CliniciansTable from "../components/CliniciansTable";
 import { FiSearch, FiPlus } from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
+import ModalContainer from "../components/ModalContainer";
+import AddClinician from "../components/AddClinician";
+import { toggleAddClinician } from "../redux/features/ModalSlice";
 
 function Clinicians() {
+  const dispatch = useDispatch();
+  const { addClinicianModal } = useSelector((store) => store.modals);
+
   return (
     <div className="p-3">
       <section className="bg-white p-3">
@@ -10,7 +16,10 @@ function Clinicians() {
           <p className="text-3xl font-bold">Clinicians</p>
 
           <section className="flex items-center gap-3">
-            <button className="bg-red text-white px-4 pr-6 rounded-md py-1.5 font-bold text-xl flex items-center gap-2">
+            <button
+              onClick={() => dispatch(toggleAddClinician())}
+              className="bg-red text-white px-4 pr-6 rounded-md py-1.5 font-bold text-xl flex items-center gap-2"
+            >
               <FiPlus />
               <span className="text-lg">Add</span>
             </button>
@@ -26,6 +35,9 @@ function Clinicians() {
         </header>
         <CliniciansTable />
       </section>
+      <ModalContainer open={addClinicianModal}>
+        <AddClinician dispatch={dispatch} />
+      </ModalContainer>
     </div>
   );
 }
