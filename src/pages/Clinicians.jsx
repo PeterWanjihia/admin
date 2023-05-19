@@ -5,30 +5,41 @@ import ModalContainer from "../components/ModalContainer";
 import AddClinician from "../components/AddClinician";
 import { toggleAddClinician } from "../redux/features/ModalSlice";
 import { useEffect, useState } from "react";
-import { clinicians } from "../../data";
+import axios from "axios";
+import Loader from "../components/Loader";
+import { setClinicians } from "../redux/features/AuthSlice";
 
 function Clinicians() {
   const dispatch = useDispatch();
   const { addClinicianModal } = useSelector((store) => store.modals);
-  const { user } = useSelector((store) => store.auth);
-  const isAdmin = user.role === "admin";
+  const { user, clinicians } = useSelector((store) => store.auth);
 
   const [filtered, setFiltered] = useState([]);
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    (async () => {
+      const { data } = await axios.get(
+        "http://localhost:5000/api/v1/clinicians"
+      );
+      dispatch(setClinicians(data.clinicians));
+      setLoading(false);
+    })();
+  }, []);
 
   useEffect(() => {
     const getClinicians = () => {
       if (name) {
         setFiltered(
-          clinicians.filter((p) => p.name.toLowerCase().includes(name))
+          clinicians?.filter((p) => p.full_name.toLowerCase().includes(name))
         );
       } else {
         setFiltered(clinicians);
       }
     };
     getClinicians();
-  }, [filtered, name]);
+  }, [name, clinicians]);
 
   return (
     <div className="p-3">
@@ -38,7 +49,7 @@ function Clinicians() {
 
           <section className="flex items-center gap-3">
             <button
-              disabled={!isAdmin}
+              disabled={!user.isAdmin}
               onClick={() => dispatch(toggleAddClinician())}
               className="bg-red text-white px-4 pr-6 rounded-md py-1.5 font-bold text-xl flex items-center gap-2"
             >
@@ -57,7 +68,7 @@ function Clinicians() {
             </div>
           </section>
         </header>
-        <CliniciansTable filtered={filtered} />
+        {loading ? <Loader /> : <CliniciansTable filtered={filtered} />}
       </section>
       <ModalContainer open={addClinicianModal}>
         <AddClinician dispatch={dispatch} />

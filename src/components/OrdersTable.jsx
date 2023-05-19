@@ -23,17 +23,14 @@ const getStyles = (status) => {
 export default function OrdersTable({ filtered }) {
   const { editOrder } = useSelector((store) => store.modals);
   const { user } = useSelector((store) => store.auth);
-  const isAdmin = user.role === "admin";
-
+  const isAdmin = user.isAdmin;
   const dispatch = useDispatch();
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="Orders">
         <TableHead className="bg-input">
           <TableRow>
-            <TableCell align="center">
-              <span className="text-lg font-bold">#</span>
-            </TableCell>
             <TableCell align="center">
               <span className="text-lg font-bold">Date</span>
             </TableCell>
@@ -45,6 +42,9 @@ export default function OrdersTable({ filtered }) {
             </TableCell>
             <TableCell align="center">
               <span className="text-lg font-bold">Deliver By</span>
+            </TableCell>
+            <TableCell align="center">
+              <span className="text-lg font-bold">Courier</span>
             </TableCell>
             <TableCell align="center">
               <span className="text-lg font-bold">Status</span>
@@ -66,25 +66,27 @@ export default function OrdersTable({ filtered }) {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell align="center">
-                  <span className="text-lblack font-bold">{i + 1}</span>
-                </TableCell>
-                <TableCell align="center">
                   <span className="">
-                    {moment(order.orderDate).format("L") +
+                    {moment(order.orderDate).format("DD/MM/YYYY") +
                       " - " +
                       moment(order.orderDate).format("LT")}
                   </span>
                 </TableCell>
                 <TableCell align="center">
-                  <span className="">{order.orderId}</span>
-                </TableCell>
-                <TableCell align="center">
-                  <span className="">
-                    Ksh <b>{order.deliveryFee}</b>
+                  <span className="text-blue tracking-wider font-bold">
+                    {order.orderId}
                   </span>
                 </TableCell>
                 <TableCell align="center">
-                  <span>{moment(order.deliverBy).format("L")}</span>
+                  <span className="">
+                    Ksh <b>{order.delivery_fee}</b>
+                  </span>
+                </TableCell>
+                <TableCell align="center">
+                  <span>{moment(order.deliverBy).format("DD/MM/YYYY")}</span>
+                </TableCell>
+                <TableCell align="center">
+                  <span className="">{order.courier}</span>
                 </TableCell>
                 <TableCell align="center">
                   <span

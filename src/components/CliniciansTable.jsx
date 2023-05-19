@@ -24,12 +24,15 @@ export default function CliniciansTable({ filtered }) {
   const { user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
 
-  const isAdmin = user.role === "admin";
+  const isAdmin = user.isAdmin;
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="Orders">
         <TableHead className="bg-input">
           <TableRow>
+            <TableCell align="center">
+              <span className="text-lg font-bold">#</span>
+            </TableCell>
             <TableCell align="center">
               <span className="text-lg font-bold">Name</span>
             </TableCell>
@@ -57,7 +60,14 @@ export default function CliniciansTable({ filtered }) {
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell align="center">
-                <span className="">{clinician.name}</span>
+                <img
+                  src={clinician.photoUrl}
+                  alt=""
+                  className="w-10 h-10 rounded-full mx-auto"
+                />
+              </TableCell>
+              <TableCell align="center">
+                <span className="">{clinician.full_name}</span>
               </TableCell>
               <TableCell align="center">
                 <span className="">{clinician.phone}</span>

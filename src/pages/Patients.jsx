@@ -1,26 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PatientsTable from "../components/PatientsTable";
 import { FiSearch } from "react-icons/fi";
-import { patients } from "../../data";
-import { useEffect } from "react";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { setPatients } from "../redux/features/AuthSlice";
+import Loader from "../components/Loader";
 
 function Patients() {
   const [filtered, setFiltered] = useState([]);
   const [name, setName] = useState("");
-  
+  const [loading, setLoading] = useState(true);
+  const { patients } = useSelector((store) => store.auth);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const { data } = await axios.get(
+          "http://localhost:5000/api/v1/patients"
+        );
+        setLoading(false);
+        dispatch(setPatients(data.patients));
+      } catch (error) {
+        setLoading(true);
+        return toast.error(error.response.data.msg);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     const getPatients = () => {
       if (name) {
         setFiltered(
-          patients.filter((p) => p.ccc_no.toLowerCase().includes(name))
+          patients?.filter((p) => p.ccc_no.toLowerCase().includes(name))
         );
       } else {
         setFiltered(patients);
       }
     };
     getPatients();
-  }, [filtered, name]);
+  }, [name, dispatch, patients]);
 
   return (
     <div className="p-3">
@@ -40,7 +61,7 @@ function Patients() {
             />
           </div>
         </header>
-        <PatientsTable filtered={filtered} />
+        {loading ? <Loader /> : <PatientsTable filtered={filtered} />}
       </section>
     </div>
   );

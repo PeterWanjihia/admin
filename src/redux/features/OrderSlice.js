@@ -1,27 +1,29 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { orders } from "../../../data";
 
 const initialState = {
-  orders: [...orders],
+  orders: [],
   selectedOrder: null,
 };
 const OrderSlice = createSlice({
   name: "orders",
   initialState,
   reducers: {
+    setOrders: (state, action) => {
+      state.orders = action.payload.sort((a, b) => {
+        return new Date(b.orderDate) - new Date(a.orderDate);
+      });
+    },
     selectOrder: (state, action) => {
       state.selectedOrder = action.payload;
     },
-    updateOrderData: (state, action) => {
-      console.log(action.payload);
-      const order = state.orders.find(
-        (order) => order.orderId === action.payload.id
+    updateOrder: (state, action) => {
+      const orderIndex = state.orders.findIndex(
+        (order) => order.orderId === action.payload.orderId
       );
-      order.status = "on-transit";
-      order.deliveryFee = action.payload.price;
+      state.orders[orderIndex] = action.payload;
     },
   },
 });
 
-export const { selectOrder, updateOrderData } = OrderSlice.actions;
+export const { selectOrder, updateOrder, setOrders } = OrderSlice.actions;
 export default OrderSlice.reducer;

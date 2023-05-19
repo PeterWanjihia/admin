@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { AiOutlineDashboard, AiFillMedicineBox } from "react-icons/ai";
 import { TbStethoscope } from "react-icons/tb";
 import { HiUsers } from "react-icons/hi";
@@ -10,9 +10,11 @@ function Navbar() {
   const dispatch = useDispatch();
   const { user } = useSelector((store) => store.auth);
   return (
-    <section className="bg-white sticky top-0 border-b-bcolor border-b-[1px] p-2 px-4">
+    <section className="bg-white sticky top-0 border-b-bcolor border-b-[1px] p-2 px-4 z-1000">
       <nav className="w-full max-w-[1400px] items-center justify-between mx-auto flex">
-        <span className="text-4xl font-bold text-red my-3">CURECAB</span>
+        <Link to="/" className="text-4xl font-bold text-red my-3">
+          CURECAB
+        </Link>
         <ul className="px-3 flex-1 flex items-center justify-center gap-5 hidden lg:flex">
           <li className="">
             <NavLink
@@ -72,15 +74,10 @@ function Navbar() {
         </ul>
         <div className="flex items-center gap-2">
           <button
-            className="flex gap-2 items-center bg-input h-[50px] lg:px-5 px-2  rounded-md"
+            className="w-[55px] h-[55px] rounded-full overflow-hidden"
             onClick={() => dispatch(logout())}
           >
-            <img
-              src="avatar.png"
-              alt=""
-              className="w-[40px] h-[40px] rounded-full object-cover"
-            />
-            <span className="truncate md:inline-flex hidden">{user.name}</span>
+            <img src={user.photoUrl} alt="" className="object-cover" />
           </button>
           <button className="text-4xl text-lblack lg:hidden">
             <CgMenuRightAlt />

@@ -17,7 +17,7 @@ export default function PatientsTable({ filtered }) {
   const dispatch = useDispatch();
   const { editPatient } = useSelector((store) => store.modals);
   const { user } = useSelector((store) => store.auth);
-  const isAdmin = user.role === "admin";
+  const isAdmin = user.isAdmin;
 
   return (
     <TableContainer component={Paper}>
@@ -51,7 +51,11 @@ export default function PatientsTable({ filtered }) {
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell align="center">
-                <span className="text-lblack font-bold">{i + 1}</span>
+                <img
+                  src={patient.photoUrl}
+                  alt=""
+                  className="w-10 h-10 rounded-full mx-auto"
+                />
               </TableCell>
               <TableCell align="center">
                 <span className="">{patient.phone}</span>

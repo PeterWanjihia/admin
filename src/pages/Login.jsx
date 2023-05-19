@@ -1,6 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { clinicians } from "../../data";
+import axios from "axios";
 import { setUser } from "../redux/features/AuthSlice";
 import { useDispatch } from "react-redux";
 import { CgSpinnerTwoAlt } from "react-icons/cg";
@@ -11,29 +11,27 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) return toast.error("All fields are required!");
 
     setLoading(true);
-    setTimeout(() => {
-      const user = clinicians.find((c) => c.email === email);
-      if (!user) {
-        setLoading(false);
-        return toast.error("Invalid credentials.");
-      }
-
-      const passwordMatch = password === user.password;
-      if (!passwordMatch) {
-        setLoading(false);
-        return toast.error("Invalid credentials.");
-      }
-
-      localStorage.setItem("user", JSON.stringify(user));
+    try {
+      const { data } = await axios.post(
+        "http://localhost:5000/api/v1/clinicians/login",
+        {
+          email,
+          password,
+        }
+      );
+      toast.success(data.msg);
+      localStorage.setItem("user", JSON.stringify(data.user));
       setLoading(false);
-      dispatch(setUser(user));
-      return toast.success("You are now logged in.");
-    }, 1000);
+      dispatch(setUser(data.user));
+    } catch (error) {
+      setLoading(false);
+      return toast.error(error.response.data.msg);
+    }
   };
 
   return (

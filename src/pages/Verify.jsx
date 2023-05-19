@@ -2,10 +2,10 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import { CgSpinnerTwoAlt } from "react-icons/cg";
 
 function Verify() {
   const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [confirmPassWord, setConfirmPassWord] = useState("");
   const location = useLocation();
@@ -13,7 +13,7 @@ function Verify() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!phone || !confirmPassWord || !password)
+    if (!confirmPassWord || !password)
       return toast.error("All fields are required!");
 
     if (password !== confirmPassWord)
@@ -21,17 +21,16 @@ function Verify() {
 
     setLoading(true);
     try {
-      const { data } = await axios.post(
-        "http://localhost:3000/clinician/verify",
+      const { data } = await axios.patch(
+        "http://localhost:5000/api/v1/clinicians/verify",
         {
           token: location.search.split("=").pop(),
-          phone,
           password,
         }
       );
       setLoading(false);
-      navigate("/login");
-      return toast.success(data.msg);
+      toast.success(data.msg);
+      return navigate("/login");
     } catch (error) {
       setLoading(false);
       return toast.error(error.response.data.msg);
@@ -43,21 +42,6 @@ function Verify() {
       <form className="bg-white p-3 rounded-md w-full max-w-[500px] py-6">
         <div className="relative">
           <p className="text-3xl mb-5 text-center">Set password</p>
-        </div>
-
-        <div className="w-full mb-3">
-          <label htmlFor="" className="text-[18px]">
-            Phone number
-          </label>
-          <input
-            disabled={loading}
-            value={phone}
-            onChange={(e) => setPhone(e.target.value.trim())}
-            type="text"
-            placeholder="+254712345678"
-            className="w-full bg-input p-4 rounded-sm mt-2 outline-none text-lblack  
-            focus:border-green border-[1px] border-input text-lg"
-          />
         </div>
 
         <div className="w-full mb-3">
@@ -97,7 +81,11 @@ function Verify() {
           onClick={handleSubmit}
           className="w-full bg-red py-3 text-white text-bold text-xl hover:opacity-[.8] rounded-md mt-5"
         >
-          Submit
+          {loading ? (
+            <CgSpinnerTwoAlt className="animate-spin mx-auto duration-30 text-3xl" />
+          ) : (
+            "Submit"
+          )}
         </button>
       </form>
     </div>

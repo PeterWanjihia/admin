@@ -1,10 +1,65 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleEditClinician } from "../redux/features/ModalSlice";
-import { facilities } from "../../data";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { CgSpinnerTwoAlt } from "react-icons/cg";
+import { updateClinician } from "../redux/features/AuthSlice";
 
 function EditClinician() {
   const dispatch = useDispatch();
   const { selectedClinician } = useSelector((store) => store.auth);
+
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState(selectedClinician.full_name);
+  const [email, setEmail] = useState(selectedClinician.email);
+  const [phone, setPhone] = useState(selectedClinician.phone);
+  const [facility, setFacility] = useState(selectedClinician.facility);
+  const [facilities, setFacilities] = useState([]);
+
+  const canUpdate =
+    name !== selectedClinician.full_name ||
+    email !== selectedClinician.email ||
+    phone !== selectedClinician.phone ||
+    facility !== selectedClinician.facility;
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await axios.get(
+        "http://localhost:5000/api/v1/facilities"
+      );
+      setFacilities(data.facilities);
+    })();
+  }, []);
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    if (canUpdate) {
+      setLoading(true);
+      try {
+        const { data } = await axios.patch(
+          "http://localhost:5000/api/v1/clinicians/update",
+          {
+            userId: selectedClinician._id,
+            phone,
+            facility,
+            full_name: name,
+            email,
+          }
+        );
+        setLoading(false);
+        dispatch(updateClinician({ user: data.clinician }));
+        dispatch(toggleEditClinician());
+        return toast.success(data.msg);
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+        return toast.error(error.response.data.msg);
+      }
+    } else {
+      dispatch(toggleEditClinician());
+    }
+  };
 
   return (
     <form className="bg-white rounded-md p-5 w-full max-w-[500px] mx-5">
@@ -13,9 +68,11 @@ function EditClinician() {
           Full name
         </label>
         <input
+          disabled={loading}
           type="text"
           className="bg-input h-[45px] px-5 rounded-sm text-lblack"
-          value={selectedClinician?.name}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
       </div>
 
@@ -24,9 +81,11 @@ function EditClinician() {
           Phone number
         </label>
         <input
+          disabled={loading}
           type="text"
           className="bg-input h-[45px] px-5 rounded-sm text-lblack"
-          value={selectedClinician?.phone}
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
         />
       </div>
 
@@ -35,9 +94,11 @@ function EditClinician() {
           Email address
         </label>
         <input
+          disabled={loading}
           type="text"
           className="bg-input h-[45px] px-5 rounded-sm text-lblack"
-          value={selectedClinician?.email}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
       </div>
 
@@ -47,11 +108,11 @@ function EditClinician() {
         </label>
         <select
           className="bg-input h-[45px] px-5 rounded-sm text-lblack"
-          onChange={() => {}}
-          defaultValue={selectedClinician?.facility}
+          onChange={(e) => setFacility(e.target.value)}
+          disabled={loading}
         >
-          {facilities.map((f, i) => (
-            <option key={i} value={f.name}>
+          {facilities?.map((f, i) => (
+            <option selected={f.name === facility} key={i} value={f.name}>
               {f.name}
             </option>
           ))}
@@ -60,16 +121,22 @@ function EditClinician() {
 
       <section className="flex gap-5 mt-5">
         <button
+          disabled={loading}
           onClick={() => dispatch(toggleEditClinician())}
           className="w-full rounded-md h-[45px] text-white text-lg font-bold bg-blue"
         >
           Cancel
         </button>
         <button
-          onClick={() => dispatch(toggleEditClinician())}
+          disabled={loading}
+          onClick={handleUpdate}
           className="w-full rounded-md h-[45px] text-white text-lg font-bold bg-red"
         >
-          Update
+          {loading ? (
+            <CgSpinnerTwoAlt className="animate-spin mx-auto duration-30 text-3xl" />
+          ) : (
+            "Update"
+          )}
         </button>
       </section>
     </form>

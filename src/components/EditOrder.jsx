@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleOrder } from "../redux/features/ModalSlice";
-import { updateOrderData } from "../redux/features/OrderSlice";
+import { updateOrder } from "../redux/features/OrderSlice";
 import { MdCancel } from "react-icons/md";
 import moment from "moment";
 import { useState } from "react";
@@ -11,7 +11,7 @@ import { CgSpinnerTwoAlt } from "react-icons/cg";
 function EditOrder() {
   const dispatch = useDispatch();
   const { selectedOrder } = useSelector((store) => store.orders);
-  const [price, setPrice] = useState(selectedOrder.deliveryFee);
+  const [price, setPrice] = useState(selectedOrder.delivery_fee);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(selectedOrder.status);
 
@@ -19,21 +19,27 @@ function EditOrder() {
     e.preventDefault();
 
     if (
-      price !== selectedOrder.deliveryFee ||
+      price !== selectedOrder.delivery_fee ||
       status !== selectedOrder.status
     ) {
       setLoading(true);
-      axios.post("http://localhost:5000/send-message", {
-        message: `Your order has been confirmed. Your delivey fee will be KSH ${price}. Your delivery is now on transit.`,
-        to: "+254114952302",
-      });
-
-      setTimeout(() => {
+      try {
+        const { data } = await axios.patch(
+          "http://localhost:5000/api/v1/orders/update/" + selectedOrder._id,
+          {
+            delivery_fee: price,
+            status,
+            initialFee: selectedOrder.delivery_fee,
+          }
+        );
         setLoading(false);
-        dispatch(updateOrderData({ id: selectedOrder.orderId, price }));
+        dispatch(updateOrder(data.order));
         dispatch(toggleOrder());
-        toast.success("Order details updated.");
-      }, 1000);
+        return toast.success("Order details updated.");
+      } catch (error) {
+        setLoading(false);
+        return toast.error(error.response.data.msg);
+      }
     } else {
       return dispatch(toggleOrder());
     }
@@ -63,7 +69,7 @@ function EditOrder() {
       <p className="text-lg mt-5 font-bold">
         Order Date :
         <span className="text-[15px] text-lblack font-[400] ml-5">
-          {moment(selectedOrder.orderDate).format("L") +
+          {moment(selectedOrder.orderDate).format("DD/MM/YYYY") +
             " - " +
             moment(selectedOrder.orderDate).format("LT")}
         </span>
@@ -89,7 +95,7 @@ function EditOrder() {
       <p className="text-lg mt-5 font-bold">
         Status :
         <select
-          className="px-5 ml-5 font-[400] h-[40px] text-lblack"
+          className="px-5 ml-5 font-[400] h-[40px] text-lblack bg-input"
           disabled={loading}
           defaultValue={selectedOrder.status}
           onChange={(e) => setStatus(e.target.value)}
