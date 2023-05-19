@@ -1,7 +1,9 @@
-import React from "react";
+import { useSelector } from "react-redux";
 import { toggleEditPatient } from "../redux/features/ModalSlice";
+import moment from "moment";
 
 function EditPatient({ dispatch }) {
+  const { selectedPatient } = useSelector((store) => store.auth);
   return (
     <div className="bg-white rounded-md p-5 w-full max-w-[500px] mx-5">
       <h1 className="text-center text-xl font-bold border-b-[1px] border-bcolor pb-2">
@@ -9,12 +11,13 @@ function EditPatient({ dispatch }) {
       </h1>
       <div className="flex flex-col mt-5">
         <label htmlFor="" className="text-lg">
-          UPI code
+          CCC no.
         </label>
         <input
           type="text"
           className="bg-input h-[45px] px-5 rounded-sm text-lblack"
-          value="Join Doe"
+          value={selectedPatient?.ccc_no}
+          disabled
         />
       </div>
 
@@ -24,8 +27,9 @@ function EditPatient({ dispatch }) {
         </label>
         <input
           type="text"
-          className="bg-input h-[45px] px-5 rounded-sm text-lblack"
-          value="22/03/2023"
+          className="bg-input h-[45px] px-5 rounded-sm text-green"
+          disabled
+          value={moment(selectedPatient.last_order).format("L")}
         />
       </div>
 
@@ -33,11 +37,17 @@ function EditPatient({ dispatch }) {
         <label htmlFor="" className="text-lg">
           Next Order
         </label>
-        <input
-          type="date"
-          className="bg-input h-[45px] px-5 rounded-sm text-lblack"
-          value="07-23-2023"
-        />
+        <div className="flex items-center gap-2 h-[45px] bg-input px-5">
+          <span className="text-red">
+            {moment(selectedPatient.next_order).format("L")}
+          </span>
+          <input
+            type="date"
+            className="bg-input rounded-sm text-lblack ml-auto"
+            placeholder="fe"
+            value={moment(selectedPatient.next_order).format("L")}
+          />
+        </div>
       </div>
 
       <div className="flex flex-col mt-5">

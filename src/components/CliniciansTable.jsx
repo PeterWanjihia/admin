@@ -15,50 +15,16 @@ import {
   toggleEditClinician,
 } from "../redux/features/ModalSlice";
 import DeleteClinician from "./DeleteClinician";
+import { setSelectedClinician } from "../redux/features/AuthSlice";
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData(
-    "John Doe",
-    "+647382047287",
-    "johndoe@email.com",
-    "JKUAT Hospital"
-  ),
-  createData(
-    "John Doe",
-    "+647382047287",
-    "johndoe@email.com",
-    "JKUAT Hospital"
-  ),
-  createData(
-    "John Doe",
-    "+647382047287",
-    "johndoe@email.com",
-    "JKUAT Hospital"
-  ),
-  createData(
-    "John Doe",
-    "+647382047287",
-    "johndoe@email.com",
-    "JKUAT Hospital"
-  ),
-  createData(
-    "John Doe",
-    "+647382047287",
-    "johndoe@email.com",
-    "22/03/2023",
-    "delivered"
-  ),
-];
-
-export default function CliniciansTable() {
+export default function CliniciansTable({ filtered }) {
   const { editClinicianModal, deleteClinicianModal } = useSelector(
     (store) => store.modals
   );
+  const { user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
+
+  const isAdmin = user.role === "admin";
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="Orders">
@@ -85,36 +51,50 @@ export default function CliniciansTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {filtered?.map((clinician, i) => (
             <TableRow
-              key={row.name}
+              key={i}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell align="center">
-                <span className="">{row.name}</span>
+                <span className="">{clinician.name}</span>
               </TableCell>
               <TableCell align="center">
-                <span className="">{row.calories}</span>
+                <span className="">{clinician.phone}</span>
               </TableCell>
               <TableCell align="center">
-                <span className="">{row.fat}</span>
+                <span className="">{clinician.email}</span>
               </TableCell>
               <TableCell align="center">
-                <span>JKUAT Hospital</span>
+                <span>{clinician.facility}</span>
               </TableCell>
               <TableCell align="center">
-                <span className="font-bold text-green">YES</span>
+                <span
+                  className={`font-bold ${
+                    clinician.verified ? "text-green" : " text-red"
+                  }`}
+                >
+                  {clinician.verified ? "YES" : "NO"}
+                </span>
               </TableCell>
               <TableCell align="center">
                 <div className="flex items-center gap-3 justify-center">
                   <button
-                    onClick={() => dispatch(toggleEditClinician())}
+                    disabled={!isAdmin}
+                    onClick={() => {
+                      dispatch(setSelectedClinician(clinician));
+                      dispatch(toggleEditClinician());
+                    }}
                     className="w-[30px] h-[30px] rounded-full flex justify-center items-center bg-lblack text-lg text-white cursor-pointer"
                   >
                     <FiEdit />
                   </button>
                   <button
-                    onClick={() => dispatch(toggleDeleteClinician())}
+                    disabled={!isAdmin}
+                    onClick={() => {
+                      dispatch(setSelectedClinician(clinician));
+                      dispatch(toggleDeleteClinician());
+                    }}
                     className="w-[30px] h-[30px] rounded-full flex justify-center items-center bg-red text-lg text-white cursor-pointer"
                   >
                     <CgTrash />

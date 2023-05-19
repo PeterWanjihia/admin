@@ -1,10 +1,10 @@
-import Sidebar from "./Sidebar";
+import Navbar from "./Navbar";
 
 function Layout({ children }) {
   return (
-    <div className="flex bg-input">
-      <Sidebar />
-      <div className="w-full">{children}</div>
+    <div className="bg-input min-h-screen h-full">
+      <Navbar />
+      <div className="w-full mx-auto max-w-[1400px] bg-input">{children}</div>
     </div>
   );
 }

@@ -1,8 +1,10 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toggleEditClinician } from "../redux/features/ModalSlice";
+import { facilities } from "../../data";
 
 function EditClinician() {
   const dispatch = useDispatch();
+  const { selectedClinician } = useSelector((store) => store.auth);
 
   return (
     <form className="bg-white rounded-md p-5 w-full max-w-[500px] mx-5">
@@ -13,7 +15,7 @@ function EditClinician() {
         <input
           type="text"
           className="bg-input h-[45px] px-5 rounded-sm text-lblack"
-          value="Join Doe"
+          value={selectedClinician?.name}
         />
       </div>
 
@@ -24,7 +26,7 @@ function EditClinician() {
         <input
           type="text"
           className="bg-input h-[45px] px-5 rounded-sm text-lblack"
-          value="0712345678"
+          value={selectedClinician?.phone}
         />
       </div>
 
@@ -35,7 +37,7 @@ function EditClinician() {
         <input
           type="text"
           className="bg-input h-[45px] px-5 rounded-sm text-lblack"
-          value="Join Doe"
+          value={selectedClinician?.email}
         />
       </div>
 
@@ -43,11 +45,17 @@ function EditClinician() {
         <label htmlFor="" className="text-lg mb-1">
           Facility
         </label>
-        <input
-          type="text"
+        <select
           className="bg-input h-[45px] px-5 rounded-sm text-lblack"
-          value="Join Doe"
-        />
+          onChange={() => {}}
+          defaultValue={selectedClinician?.facility}
+        >
+          {facilities.map((f, i) => (
+            <option key={i} value={f.name}>
+              {f.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <section className="flex gap-5 mt-5">

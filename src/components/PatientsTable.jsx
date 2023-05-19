@@ -10,24 +10,15 @@ import { useSelector, useDispatch } from "react-redux";
 import ModalContainer from "./ModalContainer";
 import EditPatient from "./EditPatient";
 import { toggleEditPatient } from "../redux/features/ModalSlice";
+import moment from "moment";
+import { setSelectedPatient } from "../redux/features/AuthSlice";
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData("MOH-29493293hc34", "22/03/2023", "22/6/2023"),
-  createData("MOH-29493293hc34", "22/03/2023", "22/6/2023"),
-  createData("MOH-29493293hc34", "22/03/2023", "22/6/2023"),
-  createData("MOH-29493293hc34", "22/03/2023", "22/6/2023"),
-  createData("MOH-29493293hc34", "22/03/2023", "22/6/2023"),
-  createData("MOH-29493293hc34", "22/03/2023", "22/6/2023"),
-  createData("MOH-29493293hc34", "22/03/2023", "22/6/2023"),
-];
-
-export default function PatientsTable() {
+export default function PatientsTable({ filtered }) {
   const dispatch = useDispatch();
   const { editPatient } = useSelector((store) => store.modals);
+  const { user } = useSelector((store) => store.auth);
+  const isAdmin = user.role === "admin";
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="Orders">
@@ -37,10 +28,13 @@ export default function PatientsTable() {
               <span className="text-lg font-bold">#</span>
             </TableCell>
             <TableCell align="center">
-              <span className="text-lg font-bold">UPI code</span>
+              <span className="text-lg font-bold">Phone</span>
             </TableCell>
             <TableCell align="center">
-              <span className="text-lg font-bold">Last order</span>
+              <span className="text-lg font-bold">Full name</span>
+            </TableCell>
+            <TableCell align="center">
+              <span className="text-lg font-bold">CCC No.</span>
             </TableCell>
             <TableCell align="center">
               <span className="text-lg font-bold">Next order</span>
@@ -51,26 +45,35 @@ export default function PatientsTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, i) => (
+          {filtered?.map((patient, i) => (
             <TableRow
-              key={row.name}
+              key={i}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell align="center">
                 <span className="text-lblack font-bold">{i + 1}</span>
               </TableCell>
               <TableCell align="center">
-                <span className="">{row.name}</span>
+                <span className="">{patient.phone}</span>
               </TableCell>
               <TableCell align="center">
-                <span className="">{row.calories}</span>
+                <span className="">{patient.full_name}</span>
               </TableCell>
               <TableCell align="center">
-                <span className="">{row.fat}</span>
+                <span className="">{patient.ccc_no}</span>
+              </TableCell>
+              <TableCell align="center">
+                <span className="">
+                  {moment(patient.next_order).format("L")}
+                </span>
               </TableCell>
               <TableCell align="center">
                 <button
-                  onClick={() => dispatch(toggleEditPatient())}
+                  disabled={!isAdmin}
+                  onClick={() => {
+                    dispatch(setSelectedPatient(patient));
+                    dispatch(toggleEditPatient());
+                  }}
                   className="w-[30px] h-[30px] rounded-full mx-auto flex justify-center items-center bg-lblack text-lg text-white cursor-pointer"
                 >
                   <FiEdit />

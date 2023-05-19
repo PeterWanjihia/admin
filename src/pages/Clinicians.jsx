@@ -4,10 +4,31 @@ import { useDispatch, useSelector } from "react-redux";
 import ModalContainer from "../components/ModalContainer";
 import AddClinician from "../components/AddClinician";
 import { toggleAddClinician } from "../redux/features/ModalSlice";
+import { useEffect, useState } from "react";
+import { clinicians } from "../../data";
 
 function Clinicians() {
   const dispatch = useDispatch();
   const { addClinicianModal } = useSelector((store) => store.modals);
+  const { user } = useSelector((store) => store.auth);
+  const isAdmin = user.role === "admin";
+
+  const [filtered, setFiltered] = useState([]);
+  const [name, setName] = useState("");
+
+
+  useEffect(() => {
+    const getClinicians = () => {
+      if (name) {
+        setFiltered(
+          clinicians.filter((p) => p.name.toLowerCase().includes(name))
+        );
+      } else {
+        setFiltered(clinicians);
+      }
+    };
+    getClinicians();
+  }, [filtered, name]);
 
   return (
     <div className="p-3">
@@ -17,6 +38,7 @@ function Clinicians() {
 
           <section className="flex items-center gap-3">
             <button
+              disabled={!isAdmin}
               onClick={() => dispatch(toggleAddClinician())}
               className="bg-red text-white px-4 pr-6 rounded-md py-1.5 font-bold text-xl flex items-center gap-2"
             >
@@ -29,11 +51,13 @@ function Clinicians() {
                 type="search"
                 placeholder="Search with name"
                 className="bg-input"
+                value={name}
+                onChange={(e) => setName(e.target.value.toLowerCase().trim())}
               />
             </div>
           </section>
         </header>
-        <CliniciansTable />
+        <CliniciansTable filtered={filtered} />
       </section>
       <ModalContainer open={addClinicianModal}>
         <AddClinician dispatch={dispatch} />

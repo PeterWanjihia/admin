@@ -1,18 +1,47 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { clinicians } from "../../data";
+import { setUser } from "../redux/features/AuthSlice";
+import { useDispatch } from "react-redux";
+import { CgSpinnerTwoAlt } from "react-icons/cg";
 
 function Login() {
-  const [upi, setUpi] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!upi || !password) return toast.error("All fields are required!");
+    if (!email || !password) return toast.error("All fields are required!");
+
+    setLoading(true);
+    setTimeout(() => {
+      const user = clinicians.find((c) => c.email === email);
+      if (!user) {
+        setLoading(false);
+        return toast.error("Invalid credentials.");
+      }
+
+      const passwordMatch = password === user.password;
+      if (!passwordMatch) {
+        setLoading(false);
+        return toast.error("Invalid credentials.");
+      }
+
+      localStorage.setItem("user", JSON.stringify(user));
+      setLoading(false);
+      dispatch(setUser(user));
+      return toast.success("You are now logged in.");
+    }, 1000);
   };
 
   return (
     <div className="flex items-center justify-center w-full h-screen">
-      <form className="bg-white p-3 rounded-md w-full max-w-[500px] py-6">
+      <form
+        className="bg-white p-3 rounded-md w-full max-w-[500px] py-6"
+        onSubmit={handleSubmit}
+      >
         <div className="relative">
           <p className="text-3xl mb-5 text-center">Login</p>
         </div>
@@ -22,9 +51,11 @@ function Login() {
             Email address
           </label>
           <input
-            value={upi}
-            onChange={(e) => setUpi(e.target.value.trim())}
-            type="text"
+            disabled={loading}
+            value={email}
+            onChange={(e) => setEmail(e.target.value.trim())}
+            required
+            type="email"
             placeholder="abc@example.com"
             className="w-full bg-input p-4 rounded-sm mt-2 outline-none text-lblack
              focus:border-green border-[1px] border-input text-lg
@@ -37,10 +68,12 @@ function Login() {
             Password
           </label>
           <input
+            disabled={loading}
             value={password}
             onChange={(e) => setPassword(e.target.value.trim())}
             minLength={6}
             maxLength={16}
+            required
             type="password"
             placeholder="* * * * * *"
             className="w-full bg-input p-4 rounded-sm mt-2 text-lg
@@ -49,10 +82,15 @@ function Login() {
         </div>
 
         <button
+          disabled={loading}
           onClick={handleSubmit}
           className="w-full bg-red py-3 text-white text-bold text-xl hover:opacity-[.8] rounded-md mt-5"
         >
-          Login
+          {loading ? (
+            <CgSpinnerTwoAlt className="animate-spin mx-auto duration-30 text-3xl" />
+          ) : (
+            "Login"
+          )}
         </button>
       </form>
     </div>
