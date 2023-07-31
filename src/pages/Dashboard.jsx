@@ -40,15 +40,15 @@ function Dashboard() {
         ]);
 
         dispatch(setOrders(response[0].data.orders));
-        dispatch(setPatients(response[1].data.clinicians));
-        dispatch(setClinicians(response[2].data.patients));
+        dispatch(setClinicians(response[1].data.clinicians));
+        dispatch(setPatients(response[2].data.patients));
         setLoading(false);
       } catch (error) {
         setLoading(false);
         return toast.error(error.response.data.msg);
       }
     })();
-  }, []);
+  }, [dispatch, user]);
 
   return (
     <div className="p-3">

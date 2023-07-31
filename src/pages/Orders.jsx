@@ -80,7 +80,7 @@ function Orders() {
               <option value="on-transit">On transit</option>
               <option value="pending">Pending</option>
               <option value="delivered">Delivered</option>
-              <option value="cancelled">Canceleld</option>
+              <option value="cancelled">Cancelled</option>
             </select>
           </div>
           <div className="flex items-center gap-3 bg-input px-3 p-2 rounded-md text-lblack">

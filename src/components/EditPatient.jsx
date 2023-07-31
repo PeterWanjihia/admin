@@ -13,7 +13,7 @@ function EditPatient({ dispatch }) {
   const [next_order, setNext_order] = useState(selectedPatient.next_order);
   const [can_order, setCan_order] = useState(selectedPatient.can_order);
 
-  const handleUpdate = async (e) => {
+  const handleUpdate = async () => {
     setLoading(true);
     try {
       const { data } = await axios.patch(

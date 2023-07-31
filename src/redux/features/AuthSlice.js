@@ -43,6 +43,7 @@ const AuthSlice = createSlice({
       const index = state.patients.findIndex(
         (p) => p._id === action.payload.user._id
       );
+      console.log(action.payload.user._id);
       state.patients[index] = action.payload.user;
     },
     setSelectedClinician: (state, action) => {
